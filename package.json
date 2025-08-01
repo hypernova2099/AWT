@@ -1,0 +1,24 @@
+{
+  "name": "awt",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hypernova2099/AWT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hypernova2099/AWT/issues"
+  },
+  "homepage": "https://github.com/hypernova2099/AWT#readme",
+  "description": "",
+  "dependencies": {
+    "electron": "^37.2.5"
+  }
+}
