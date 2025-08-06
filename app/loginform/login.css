@@ -55,7 +55,7 @@
   font-weight: 800;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   letter-spacing: 2px;
-  background: linear-gradient(90deg, #8e2de2, #4a00e0); 
+  background: linear-gradient(90deg, #8e2de2, orange); 
 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
