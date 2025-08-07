@@ -46,12 +46,22 @@ body {
   height: 100vh;
 }
 
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
 .half1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 3px 8px;
   background-color: var(--secondary-color);
+  position: sticky;
+  top: 0%;
 }
 
 .logo img {
@@ -160,7 +170,7 @@ form button:hover {
   font-weight: 500;
 }
 
-/* responsive style */
+      /* responsive style */
 
 @media (max-width: 900px) {
   .container {
