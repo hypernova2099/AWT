@@ -15,10 +15,70 @@
                 <div class="logo"><img src="logo.png" alt="Logo"></div>
                 <div class="logocontent">DigitalBurnout</div>
             </div>
-            <div class="half2"></div>
+            <div class="half2">
+                <h1><em>Join DigitalBurnout !</em></h1>
+
+                <form id="signupform">
+
+                    <label for="Name"></label>
+                    <input type="text" id="Name" name="Name" placeholder="Name" required > 
+
+                    <label for="username"></label>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+
+                    <label for="email"></label>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+
+                    <label for="password"></label>
+                    <input type="password" id="password" name="password" placeholder="Password"  
+                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" 
+                    title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and be at least 8 characters long"
+                    required>
+
+                    <label for="conpassword"></label>
+                    <input type="password" id="conpassword" name="conpassword" placeholder="Confirm Password" required>
+
+                    <div id="passwordError" style="color: red; font-size: 0.9rem;"></div>
+
+                    <button type="submit">Sign Up</button>
+
+                    <p style="font-size: 14px; color: #666;">
+                        Already have an account? <a href="LoginForm.html" style="color: var(--primary-color); text-decoration: none;">Login</a>
+                    </p>
+
+                     
+
+
+
+                </form>
+
+            </div>
         </div>
         <div class="box2"></div>
     </div>
+
+<script>
+const form = document.getElementById('signupform');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('conpassword');
+const errorDiv = document.getElementById('passwordError');
+
+form.addEventListener('submit', function (e) 
+{
+  if (password.value !== confirmPassword.value) {
+    errorDiv.textContent = '⚠️ Password and Confirm Password must match.';
+    e.preventDefault(); 
+  } 
+  else 
+  {
+    errorDiv.textContent = '';
+  }
+});
+
+</script>
+
+
+
     
 </body> 
 </html>
