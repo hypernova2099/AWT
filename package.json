@@ -1,9 +1,11 @@
 {
+  
   "name": "awt",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
-    "start": "electron main.js",
+    "dev" : "nodemon backend/server.js",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +21,12 @@
   "homepage": "https://github.com/hypernova2099/AWT#readme",
   "description": "",
   "dependencies": {
-    "electron": "^37.2.5"
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "electron": "^37.2.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.0"
   }
 }
