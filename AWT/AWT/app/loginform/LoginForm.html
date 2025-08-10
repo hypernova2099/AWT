@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Burnout | Login</title>
+  <link rel="stylesheet" href="login.css">
+  <link rel="icon" type="image/jpg" href="logo.png" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="box1">
+        <div class="half1">
+          <div class="logo"><img src="logo.png" alt="Logo"></div>
+          <div class="logocontent">DigitalBurnout</div>
+        </div>
+        <div class="half2">
+          <h1>Login to DigitalBurnout</h1>
+          <form>
+            <fieldset>
+              <label for="username">Username or Email</label>
+              <input type="text" id="username" name="username" required>
+            </fieldset>
+
+            <fieldset>
+              <label for="password">Password</label>
+              <input
+                type="password" id="password" name="password" required
+                
+                pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and be at least 8 characters long">
+            </fieldset>
+
+            <input type="submit" value="Login">
+            <div class="signup-text">Don't have an account? <a href="register.html">Create Account</a></div>
+          </form>
+        </div>
+      </div>
+      <div class="box2"></div>
+    </div>
+  </body>
+  </html>
