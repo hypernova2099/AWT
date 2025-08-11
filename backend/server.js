@@ -29,10 +29,32 @@ app.post("/login", async(req,res)=>{
 });
 
 app.post("/register", async(req,res)=>{
-    const user = new User(req.body);
-    await user.save();
-    res.json({success:true});
-})
+
+    try {
+        const {name,username,email,password} = req.body;
+
+        const existingUser = await User.findOne({email});
+        if (existingUser){
+            return res.status(400).json({message:"User with same email exists!"});
+        }
+
+        //const hashedPassword = await bcrypt.hash(password, 10);  for future
+
+        const newUser = new User({
+            name,
+            username,
+            email,
+            password
+        })
+
+        await newUser.save();
+        res.status(201).json({message:"User Registered Successfully!"});   
+
+    } catch (error) {
+        res.status(500).json({message:"Server Error", error}); 
+    }
+    
+});
 
 app.listen(port,()=>{
     console.log(`server running on ${port}`);

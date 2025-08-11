@@ -26,13 +26,12 @@
             <fieldset>
               <label for="password">Password</label>
               <input
-                type="password" id="password" name="password" required
-                
-                >
+                type="password" id="password" name="password" 
+                required pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" 
+                title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and be at least 8 characters long">
             </fieldset>
 
-            <!-- pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" 
-                title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and be at least 8 characters long"-->
+            
 
             <input type="submit" value="Login">
             <div class="signup-text">Don't have an account? <a href="register.html">Create Account</a></div>
