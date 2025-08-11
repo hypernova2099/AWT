@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "app/main.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "nodemon backend/server.js",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
