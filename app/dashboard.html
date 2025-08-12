@@ -1,13 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
+    <title>Digital Burnout Detector</title>
+    <link rel="stylesheet" href="dashboard.css">
+
 </head>
 <body>
+    <div class="container">
+                <div class="box1">
+                <div class="half1">
+                <div class="logo"><img src="./loginform/logo.png" alt="Logo"></div>
+                <div class="logocontent">DigitalBurnout</div>
+            </div></div>
+           
+        
+                <div class="half2">
+                </div><h3>Current Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-label">Burnout Risk</div>
+                        <div id="burnoutScore" class="status-value">--</div>
+                        <div id="burnoutLevel" class="status-level">--</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Today's Work</div>
+                        <div id="workHours" class="status-value">--</div>
+                        <div class="status-unit">hours</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Active Session</div>
+                        <div id="sessionTime" class="status-value">--</div>
+                        <div class="status-unit">minutes</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Eye Strain</div>
+                        <div id="eyeStrainStatus" class="status-value">--</div>
+                        <div class="status-level">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <h1>dashboard</h1>
+        <div>
+            <div class="card-header">
+                <h3>Application Usage</h3>
+                <select id="appUsagePeriod" class="period-selector">
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <canvas id="appUsageChart"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <div class="card-header">
+                <h3>Activity Distribution</h3>
+                <select id="activityPeriod" class="period-selector">
+                    <option value="1">Today</option>
+                    <option value="7">Last 7 days</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <div class="card-header">
+                <h3>Burnout Trend</h3>
+                <select id="burnoutPeriod" class="period-selector">
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <canvas id="burnoutChart"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <div class="card-header">
+                <h3>Eye Strain Alerts</h3>
+                <select id="eyeStrainPeriod" class="period-selector">
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <canvas id="eyeStrainChart"></canvas>
+            </div>
+        </div>
+
     
+        <div>
+            <div class="card-header">
+                <h3>Wellness Recommendations</h3>
+                <button id="refreshRecommendations" class="refresh-btn">🔄</button>
+            </div>
+            <div class="card-content">
+                <div id="recommendationsList" class="recommendations-list">
+                    <div class="loading">Loading recommendations...</div>
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="footer">
+            <div class="footer-content">
+                <span class="app-version">v1.0.0</span>
+                <span class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span id="connectionStatus">Connected</span>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+  
+    <div id="settingsModal" class="modal">
+        <div>
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn" id="closeSettings">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="enableNotifications" checked>
+                        Enable Notifications
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="enableWebcam" disabled>
+                        Enable Webcam for Eye Strain Detection
+                    </label>
+                    <small>Coming soon</small>
+                </div>
+                <div class="setting-group">
+                    <label>Break Reminder Interval (minutes)</label>
+                    <input type="number" id="breakInterval" value="60" min="15" max="120">
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
