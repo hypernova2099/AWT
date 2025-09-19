@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user.js'
 import cors from 'cors';
+import auth from './middleware/auth'
+import jwt from 'jsonwebtoken'
 
 const app = express();
 const port = 8080;
@@ -18,7 +20,8 @@ app.post("/login", async(req,res)=>{
         const user = await(User.findOne({username}));
 
         if (user && user.password === password){
-        res.json({success: true , userId : user._id});
+            const token = JsonWebTokenError.sign({userId:user._id, username : user.username}, "yourSecretKey", {expiresIn:'1h'});
+            res.json({success: true , token});
         }
         else{
             res.json({success: false , message : "Invalid Credentials "})
@@ -54,6 +57,28 @@ app.post("/register", async(req,res)=>{
         res.status(500).json({message:"Server Error", error}); 
     }
     
+});
+
+app.get('/dashboard-data', auth , async(req,res)=>{
+
+    try {
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({message: "User not found"});
+
+        res.json({
+                
+            burnoutScore: user.burnoutScore,
+            burnoutLevel: user.burnoutLevel,
+            workHours: user.workHours,
+            sessionTime: user.sessionTime,
+            eyeStrain: user.eyeStrain
+
+        });
+        
+    } catch (error) {
+        res.status(500).json({message:"Server Error", error });
+    }
+
 });
 
 app.listen(port,()=>{

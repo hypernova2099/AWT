@@ -149,4 +149,34 @@
     </div>
 
 </body>
+<script>
+    const token = localStorage.getItem('token');
+    if (!token){
+        window.location.href = 'loginForm.html'
+    }
+    else{
+        
+
+    fetch('http://localhost:8080/dashboard-data',{
+        headers:{
+            'Authorization':token
+        }
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        console.log("Dashboard Data:",data);
+        document.getElementById("burnoutScore").innerText = data.burnoutScore || "--";
+        document.getElementById("burnoutLevel").innerText = data.burnoutLevel || "--";
+        document.getElementById("workHours").innerText = data.workHours || "--";
+        document.getElementById("sessionTime").innerText = data.sessionTime || "--";
+        document.getElementById("eyeStrainStatus").innerText = data.eyeStrain || "--";
+    })
+    .catch(err => {
+        console.error("error fetching dashboard data:", err);
+        window.location.href="loginform/loginForm.html"
+    });
+    }
+
+    
+</script>
 </html>

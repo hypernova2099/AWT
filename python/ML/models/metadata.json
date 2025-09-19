@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "features": [
+    "total_coding_hours",
+    "idle_ratio",
+    "late_night_work",
+    "eye_strain_alerts",
+    "typing_session_length",
+    "break_compliance"
+  ],
+  "model_type": "rf",
+  "train_size": 9686,
+  "test_size": 2421,
+  "accuracy": 1.0,
+  "balanced": true
+}

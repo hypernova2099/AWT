@@ -16,6 +16,7 @@ if (loginForm) {
     const data = await res.json(); 
 
     if (data.success) {
+      localStorage.setItem('token', data.token);
       window.location.href = "../dashboard.html";
     } else {
       alert("Login failed");
