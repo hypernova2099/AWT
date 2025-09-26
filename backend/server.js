@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user.js'
 import cors from 'cors';
-import auth from './middleware/auth'
+import auth from './middleware/auth.js'
 import jwt from 'jsonwebtoken'
 
 const app = express();
@@ -20,7 +20,7 @@ app.post("/login", async(req,res)=>{
         const user = await(User.findOne({username}));
 
         if (user && user.password === password){
-            const token = JsonWebTokenError.sign({userId:user._id, username : user.username}, "yourSecretKey", {expiresIn:'1h'});
+            const token = jwt.sign({userId:user._id, username : user.username}, "yourSecretKey", {expiresIn:'1h'});
             res.json({success: true , token});
         }
         else{

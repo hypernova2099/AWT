@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+import jwt from "jsonwebtoken";
 
-module.exports = function (res,req,next) {
+const auth = function (req,res,next) {
     const token = req.headers['authorization'];
     if (!token) return res.status(401).json({message: "no token provided"});
 
@@ -14,3 +14,5 @@ module.exports = function (res,req,next) {
     }
 
 };
+
+export default auth;

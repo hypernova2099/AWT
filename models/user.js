@@ -1,4 +1,4 @@
-/* import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     name : String,
@@ -18,9 +18,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-}); */
+}); 
 
-
+/*
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -37,6 +37,8 @@ const userSchema = new mongoose.Schema({
 
   createdAt: { type: Date, default: Date.now }
 });
+
+*/
 
 export default mongoose.model("User", userSchema);
 
