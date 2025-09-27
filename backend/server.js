@@ -10,7 +10,14 @@ const port = 8080;
 
 app.use(express.json());
 app.use(cors());
-mongoose.connect("mongodb://localhost:27017/burnoutDB");
+mongoose.connect("mongodb+srv://aditya:digitalburnout@cluster0.zn1dt0m.mongodb.net/DigitalBurnout?retryWrites=true&w=majority&appName=Cluster0", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("MongoDB Atlas connected"))
+.catch(err => console.log(err));
+
+
 
 
 app.post("/login", async(req,res)=>{
