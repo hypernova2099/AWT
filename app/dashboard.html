@@ -1,44 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <meta charset="UTF-8">
     <title>Digital Burnout Detector</title>
     <link rel="stylesheet" href="dashboard.css">
-
+    <script src="dashboard.js" defer></script>
 </head>
 <body>
     <div class="container">
-                <div class="box1">
-                <div class="half1">
+        <div class="box1">
+            <div class="half1">
                 <div class="logo"><img src="./loginform/logo.png" alt="Logo"></div>
                 <div class="logocontent">DigitalBurnout</div>
-            </div></div>
-           
-        
-                <div class="half2">
-                </div><h3>Current Status</h3>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <div class="status-label">Burnout Risk</div>
-                        <div id="burnoutScore" class="status-value">--</div>
-                        <div id="burnoutLevel" class="status-level">--</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Today's Work</div>
-                        <div id="workHours" class="status-value">--</div>
-                        <div class="status-unit">hours</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Active Session</div>
-                        <div id="sessionTime" class="status-value">--</div>
-                        <div class="status-unit">minutes</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Eye Strain</div>
-                        <div id="eyeStrainStatus" class="status-value">--</div>
-                        <div class="status-level">--</div>
-                    </div>
-                </div>
+            </div>
+        </div>
+
+        <div class="half2">
+        </div>
+        <h3>Current Status</h3>
+        <div class="status-grid">
+            <div class="status-item">
+                <div class="status-label">Burnout Risk</div>
+                <div id="burnoutScore" class="status-value">--</div>
+                <div id="burnoutLevel" class="status-level">--</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Today's Work</div>
+                <div id="workHours" class="status-value">--</div>
+                <div class="status-unit">hours</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Active Session</div>
+                <div id="sessionTime" class="status-value">--</div>
+                <div class="status-unit">minutes</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Eye Strain</div>
+                <div id="eyeStrainStatus" class="status-value">--</div>
+                <div class="status-level"></div>
             </div>
         </div>
 
@@ -94,7 +93,6 @@
             </div>
         </div>
 
-    
         <div>
             <div class="card-header">
                 <h3>Wellness Recommendations</h3>
@@ -107,7 +105,6 @@
             </div>
         </div>
 
-
         <footer class="footer">
             <div class="footer-content">
                 <span class="app-version">v1.0.0</span>
@@ -119,7 +116,6 @@
         </footer>
     </div>
 
-  
     <div id="settingsModal" class="modal">
         <div>
             <div class="modal-header">
@@ -149,34 +145,4 @@
     </div>
 
 </body>
-<script>
-    const token = localStorage.getItem('token');
-    if (!token){
-        window.location.href = 'loginForm.html'
-    }
-    else{
-        
-
-    fetch('http://localhost:8080/dashboard-data',{
-        headers:{
-            'Authorization':token
-        }
-    })
-    .then(res=>res.json())
-    .then(data=>{
-        console.log("Dashboard Data:",data);
-        document.getElementById("burnoutScore").innerText = data.burnoutScore || "--";
-        document.getElementById("burnoutLevel").innerText = data.burnoutLevel || "--";
-        document.getElementById("workHours").innerText = data.workHours || "--";
-        document.getElementById("sessionTime").innerText = data.sessionTime || "--";
-        document.getElementById("eyeStrainStatus").innerText = data.eyeStrain || "--";
-    })
-    .catch(err => {
-        console.error("error fetching dashboard data:", err);
-        window.location.href="loginform/loginForm.html"
-    });
-    }
-
-    
-</script>
 </html>
