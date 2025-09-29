@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "app/main.js",
   "scripts": {
-    "dev": "nodemon backend/server.js",
+    "dev": "node backend/server.js",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,12 +25,12 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "electron": "^37.2.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0"
   },
   "devDependencies": {
+    "electron": "^38.1.2",
     "vite": "^7.1.1"
   }
 }

@@ -2,15 +2,17 @@ import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user.js'
 import cors from 'cors';
-import auth from './middleware/auth'
-import jwt from 'jsonwebtoken'
+import auth from './middleware/auth.js'     
+import jwt from 'jsonwebtoken'  
 
 const app = express();
 const port = 8080;
 
 app.use(express.json());
 app.use(cors());
-mongoose.connect("mongodb://localhost:27017/burnoutDB");
+mongoose.connect("mongodb://localhost:27017/burnoutDB", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true    });
 
 
 app.post("/login", async(req,res)=>{
@@ -18,9 +20,10 @@ app.post("/login", async(req,res)=>{
     try {
         const { username,password } = req.body;
         const user = await(User.findOne({username}));
+        console.log(user.passwor);
 
         if (user && user.password === password){
-            const token = JsonWebTokenError.sign({userId:user._id, username : user.username}, "yourSecretKey", {expiresIn:'1h'});
+            const token = jwt.sign({userId:user._id, username : user.username}, "yourSecretKey", {expiresIn:'1h'});
             res.json({success: true , token});
         }
         else{

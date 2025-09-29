@@ -1,4 +1,4 @@
-/* import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     name : String,
@@ -18,10 +18,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-}); */
+}); 
+
+export default mongoose.model("User", userSchema);
 
 
-const mongoose = require("mongoose");
+/*const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -40,3 +42,4 @@ const userSchema = new mongoose.Schema({
 
 export default mongoose.model("User", userSchema);
 
+*/
