@@ -2,82 +2,112 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import jwt from "jsonwebtoken";
-import auth from "./middleware/auth.js";
-import User from "./models/user.js";
-import { MongoClient } from "mongodb";
+import { User, Dashboard, BurnoutLog, EyeStrainLog, AppUsage, ActivityLog, Recommendation } from "./models/schema.js";
+
+const MONGO_URI = "mongodb+srv://aditya:digitalburnout@cluster0.zn1dt0m.mongodb.net/DigitalBurnout?retryWrites=true&w=majority";
+const JWT_SECRET = "yourSecretKey";
 
 const app = express();
-const port = 8080;
-
-const atlasUri = "mongodb+srv://aditya:digitalburnout@cluster0.zn1dt0m.mongodb.net/DigitalBurnout?retryWrites=true&w=majority";
-
 app.use(express.json());
 app.use(cors());
 
-// MongoDB via Mongoose
-mongoose.connect(atlasUri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB Atlas connected"))
-  .catch(err => console.log(err));
+// Connect MongoDB
+await mongoose.connect(MONGO_URI);
+console.log("✅ MongoDB connected");
 
-// ========== LOGIN ==========
-app.post("/login", async (req, res) => {
+// --- Auth middleware ---
+function auth(req, res, next) {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) return res.status(401).json({ success: false, message: "No token provided" });
+
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-
-    if (user && user.password === password) {
-      const token = jwt.sign(
-        { userId: user._id, username: user.username },
-        "yourSecretKey",
-        { expiresIn: "1h" }
-      );
-      return res.json({ success: true, token });
-    }
-
-    res.status(401).json({ success: false, message: "Invalid credentials" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    return res.status(403).json({ success: false, message: "Invalid token" });
   }
-});
+}
 
-// ========== REGISTER ==========
+// --- REGISTER ---
 app.post("/register", async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
+    if (!name || !username || !email || !password)
+      return res.json({ success: false, message: "All fields required" });
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    const existing = await User.findOne({ username });
+    if (existing) return res.json({ success: false, message: "Username already exists" });
 
-    const newUser = new User({ name, username, email, password });
-    await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully!" });
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// ========== DASHBOARD ==========
-app.get("/dashboard-data", auth, async (req, res) => {
-  const client = new MongoClient(atlasUri);
-
-  try {
-    await client.connect();
-    const db = client.db("DigitalBurnout");
-    const dashboardCollection = db.collection("Dashboard");
-
-    // Always fetch the single shared dummy
-    const data = await dashboardCollection.findOne({ dummy: true });
-
-    if (!data) return res.status(404).json({ message: "No dashboard data found" });
-
-    res.json(data);
+    const user = await User.create({ name, username, email, password });
+    res.json({ success: true, message: "User registered successfully", user });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
-  } finally {
-    await client.close();
+    res.json({ success: false, message: "Server error" });
   }
 });
 
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+// --- LOGIN ---
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.json({ success: false, message: "Username and password required" });
+
+    const user = await User.findOne({ username });
+    if (!user) return res.json({ success: false, message: "User not found" });
+
+    if (user.password !== password) return res.json({ success: false, message: "Invalid password" });
+
+    const token = jwt.sign({ id: user._id, username }, JWT_SECRET, { expiresIn: "1d" });
+    res.json({ success: true, message: "Login successful", token });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Server error" });
+  }
+});
+
+// --- DASHBOARD DATA ---
+app.get("/dashboard-data", auth, async (req, res) => {
+  let data = await Dashboard.findOne({ userId: req.user.id });
+  if (!data) data = await Dashboard.findOne({ isDummy: true }); // global dummy
+  res.json(data);
+});
+
+// --- CHART STATS ---
+app.get("/api/stats/:type/:days", auth, async (req, res) => {
+  const { type, days } = req.params;
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  let data;
+
+  if (type === "burnout") {
+    data = await BurnoutLog.find({ userId: req.user.id, timestamp: { $gte: since } });
+    if (!data.length) data = await BurnoutLog.find({ isDummy: true, timestamp: { $gte: since } });
+  }
+
+  if (type === "eyeStrain") {
+    data = await EyeStrainLog.find({ userId: req.user.id, timestamp: { $gte: since } });
+    if (!data.length) data = await EyeStrainLog.find({ isDummy: true, timestamp: { $gte: since } });
+  }
+
+  if (type === "appUsage") {
+    data = await AppUsage.find({ userId: req.user.id, timestamp: { $gte: since } });
+    if (!data.length) data = await AppUsage.find({ isDummy: true, timestamp: { $gte: since } });
+  }
+
+  res.json(data);
+});
+
+// --- ACTIVITY LOGS ---
+app.get("/api/activity", auth, async (req, res) => {
+  let logs = await ActivityLog.find({ userId: req.user.id }).sort("-timestamp").limit(10);
+  if (!logs.length) logs = await ActivityLog.find({ isDummy: true }).sort("-timestamp").limit(10);
+  res.json(logs);
+});
+
+// --- RECOMMENDATIONS ---
+app.get("/api/recommendations", auth, async (req, res) => {
+  let recs = await Recommendation.find({ userId: req.user.id }).limit(5);
+  if (!recs.length) recs = await Recommendation.find({ isDummy: true }).limit(5);
+  res.json(recs);
+});
+
+app.listen(8080, () => console.log("🚀 Server running on http://localhost:8080"));
