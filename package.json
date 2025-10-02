@@ -25,12 +25,14 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "electron": "^37.2.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.17.0"
+    "mongoose": "^8.18.3"
   },
   "devDependencies": {
+    "electron": "^38.1.2",
+    "nodemon": "^3.1.10",
     "vite": "^7.1.1"
   }
 }
