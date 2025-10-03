@@ -19,7 +19,7 @@ if (signupForm) {
     alert(data.message);
 
     if (data.success) {
-      window.location.href = "login.html";
+      window.location.href = "LoginForm.html";
     }
   });
 }
