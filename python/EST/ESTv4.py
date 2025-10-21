@@ -25,6 +25,7 @@ import json
 import os
 import platform
 import sys
+from db_logger import DBLogger  
 
 # Optional imports with fallbacks
 try:
@@ -45,11 +46,12 @@ except Exception:
 class AlertLogger:
     """Simple alert logger that saves to session file."""
     
-    def __init__(self, session_id):
+    def __init__(self, session_id, db_logger=None):
         os.makedirs('alert_logs', exist_ok=True)
         self.session_id = session_id
         self.alert_file = f"alert_logs/alerts_{session_id}.json"
         self.alerts = []
+        self.db_logger = db_logger
     
     def calculate_blink_severity(self, blink_rate):
         """Calculate severity based on blink frequency."""
@@ -88,6 +90,7 @@ class AlertLogger:
         return severity_levels[min(current_index + 1, len(severity_levels) - 1)]
     
     def log_alert(self, alert_type, severity, details):
+
         """Log alert in specified format."""
         final_severity = self.adjust_severity_for_time(severity)
         
@@ -97,6 +100,11 @@ class AlertLogger:
             "severity": final_severity,
             "details": details
         }
+
+        if self.db_logger:
+            self.db_logger.log_alert(alert_type,final_severity,details)
+            
+        
         
         self.alerts.append(alert_record)
         
@@ -110,6 +118,7 @@ class AlertLogger:
 
 class EyeStrainMonitor:
     def __init__(self):
+
         """Initialize the Eye Strain Monitor with default parameters."""
         # EAR thresholds
         
@@ -150,6 +159,10 @@ class EyeStrainMonitor:
             'session_duration': 0.0
         }
 
+        self.db_logger = DBLogger(user_id="demo-user")
+        session_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.alert_logger = AlertLogger(session_timestamp, db_logger=self.db_logger)
+
         # detection and audio init
         self.detection_method = self._initialize_detection()
         self._initialize_audio()
@@ -163,8 +176,7 @@ class EyeStrainMonitor:
         
         # NEW: Add alert logger
         session_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.alert_logger = AlertLogger(session_timestamp)
-
+        
     def _initialize_detection(self):
         """Pick dlib (if available) or Haar cascades as fallback."""
         if DLIB_AVAILABLE:
@@ -562,6 +574,9 @@ class EyeStrainMonitor:
         with open(fname, "w") as f:
             json.dump(self.session_data, f, indent=2)
 
+
+        if self.db_logger:
+            self.db_logger.log_session(self.session_data, self.alert_logger.alerts)
         if final:
             print(f"Final session data saved → {fname}")
         else:
