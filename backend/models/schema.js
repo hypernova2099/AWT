@@ -9,65 +9,65 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-export const User = mongoose.model("User", userSchema);
-
-//2. Dashboard Collection 
+// --- Dashboard Schema ---
 const dashboardSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  burnoutScore: { type: Number, default: 0 },
-  burnoutLevel: { type: String, default: "Low" }, // Low / Medium / High
-  workHours: { type: Number, default: 0 },
-  sessionTime: { type: Number, default: 0 },
-  eyeStrain: { type: Number, default: 0 },        // count or % of eye strain events
-  updatedAt: { type: Date, default: Date.now }
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // ✅ optional
+  isDummy: { type: Boolean, default: false },
+  burnoutScore: Number,
+  burnoutLevel: String,
+  workHours: Number,
+  sessionTime: Number,
+  eyeStrain: Number
 });
 
-export const Dashboard = mongoose.model("Dashboard", dashboardSchema);
-
-// 3. BurnoutLogs 
+// --- Burnout Logs ---
 const burnoutLogSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  timestamp: { type: Date, default: Date.now },
-  burnoutScore: { type: Number, required: true },
-  burnoutLevel: { type: String, required: true } // Low / Medium / High
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // ✅ optional
+  isDummy: { type: Boolean, default: false },
+  burnoutScore: Number,
+  burnoutLevel: String,
+  timestamp: { type: Date, default: Date.now }
 });
 
-export const BurnoutLog = mongoose.model("BurnoutLog", burnoutLogSchema);
-
-// 4. EyeStrainLogs 
+// --- Eye Strain Logs ---
 const eyeStrainLogSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  timestamp: { type: Date, default: Date.now },
-  eyeStrainStatus: { type: String, required: true } // None / Mild / Severe
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // ✅ optional
+  isDummy: { type: Boolean, default: false },
+  eyeStrainStatus: String,
+  timestamp: { type: Date, default: Date.now }
 });
 
-export const EyeStrainLog = mongoose.model("EyeStrainLog", eyeStrainLogSchema);
-
-//5. AppUsage
+// --- App Usage ---
 const appUsageSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  appName: { type: String, required: true },
-  usageMinutes: { type: Number, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // ✅ optional
+  isDummy: { type: Boolean, default: false },
+  appName: String,
+  usageMinutes: Number,
   timestamp: { type: Date, default: Date.now }
 });
 
-export const AppUsage = mongoose.model("AppUsage", appUsageSchema);
-
-// 6. ActivityLogs
+// --- Activity Logs ---
 const activityLogSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  activityType: { type: String, required: true },  // Coding, Meeting, Browsing, etc.
-  durationMinutes: { type: Number, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // ✅ optional
+  isDummy: { type: Boolean, default: false },
+  activityType: String,
+  durationMinutes: Number,
   timestamp: { type: Date, default: Date.now }
 });
 
-export const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);
-
-//  7. Recommendations
+// --- Recommendations ---
 const recommendationSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  timestamp: { type: Date, default: Date.now },
-  recommendationText: { type: String, required: true }
+  isDummy: { type: Boolean, default: false },
+  recommendationText: String
 });
 
-export const Recommendation = mongoose.model("Recommendation", recommendationSchema);
+// --- Export Models ---
+const User = mongoose.model("User", userSchema);
+const Dashboard = mongoose.model("Dashboard", dashboardSchema);
+const BurnoutLog = mongoose.model("BurnoutLog", burnoutLogSchema);
+const EyeStrainLog = mongoose.model("EyeStrainLog", eyeStrainLogSchema);
+const AppUsage = mongoose.model("AppUsage", appUsageSchema);
+const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);
+const Recommendation = mongoose.model("Recommendation", recommendationSchema);
+
+export { User, Dashboard, BurnoutLog, EyeStrainLog, AppUsage, ActivityLog, Recommendation };

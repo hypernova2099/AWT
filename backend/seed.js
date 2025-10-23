@@ -6,6 +6,9 @@ const MONGO_URI = "mongodb+srv://aditya:digitalburnout@cluster0.zn1dt0m.mongodb.
 await mongoose.connect(MONGO_URI);
 console.log("✅ MongoDB connected for seeding");
 
+// --- HELPER FUNCTION ---
+const daysAgo = (i) => new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+
 // --- DUMMY DASHBOARD ---
 const dummyDashboard = await Dashboard.findOne({ isDummy: true });
 if (!dummyDashboard) {
@@ -13,7 +16,7 @@ if (!dummyDashboard) {
     isDummy: true,
     burnoutScore: 65,
     burnoutLevel: "Moderate",
-    workHours: 8,
+    workHours: 9,
     sessionTime: 120,
     eyeStrain: 5
   });
@@ -29,7 +32,7 @@ if (!dummyBurnout) {
       isDummy: true,
       burnoutScore: 60 + Math.floor(Math.random() * 20),
       burnoutLevel: "Moderate",
-      timestamp: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+      timestamp: daysAgo(i)
     });
   }
   await BurnoutLog.insertMany(logs);
@@ -44,7 +47,7 @@ if (!dummyEye) {
     logs.push({
       isDummy: true,
       eyeStrainStatus: i % 2 === 0 ? "Low" : "High",
-      timestamp: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+      timestamp: daysAgo(i)
     });
   }
   await EyeStrainLog.insertMany(logs);
@@ -61,7 +64,7 @@ if (!dummyApps) {
       isDummy: true,
       appName: apps[i % apps.length],
       usageMinutes: 60 + Math.floor(Math.random() * 120),
-      timestamp: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+      timestamp: daysAgo(i)
     });
   }
   await AppUsage.insertMany(logs);
@@ -72,12 +75,13 @@ if (!dummyApps) {
 const dummyActivity = await ActivityLog.findOne({ isDummy: true });
 if (!dummyActivity) {
   const logs = [];
-  for (let i = 0; i < 5; i++) {
+  const activities = ["Coding", "Reading", "Meeting", "Exercise", "Break"];
+  for (let i = 6; i >= 0; i--) {
     logs.push({
       isDummy: true,
-      activityType: `Dummy activity ${i + 1}`,
-      durationMinutes: 30 + i * 10,
-      timestamp: new Date(Date.now() - i * 3600 * 1000)
+      activityType: activities[i % activities.length],
+      durationMinutes: 30 + Math.floor(Math.random() * 30),
+      timestamp: daysAgo(i)
     });
   }
   await ActivityLog.insertMany(logs);
@@ -90,9 +94,12 @@ if (!dummyRec) {
   await Recommendation.insertMany([
     { isDummy: true, recommendationText: "Take a 5-minute break every hour." },
     { isDummy: true, recommendationText: "Reduce screen brightness to avoid strain." },
-    { isDummy: true, recommendationText: "Follow 20-20-20 rule for eye health." }
+    { isDummy: true, recommendationText: "Follow 20-20-20 rule for eye health." },
+    { isDummy: true, recommendationText: "Stretch every 2 hours to avoid fatigue." },
+    { isDummy: true, recommendationText: "Drink water regularly to stay hydrated." }
   ]);
   console.log("✅ Dummy Recommendations seeded");
 }
 
+console.log("✅ All dummy data seeded successfully!");
 process.exit();

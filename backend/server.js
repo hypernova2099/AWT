@@ -30,76 +30,73 @@ function auth(req, res, next) {
 
 // --- REGISTER ---
 app.post("/register", async (req, res) => {
-  try {
-    const { name, username, email, password } = req.body;
-    if (!name || !username || !email || !password)
-      return res.json({ success: false, message: "All fields required" });
+  const { name, username, email, password } = req.body;
+  if (!name || !username || !email || !password) return res.json({ success: false, message: "All fields required" });
 
-    const existing = await User.findOne({ username });
-    if (existing) return res.json({ success: false, message: "Username already exists" });
+  const existing = await User.findOne({ username });
+  if (existing) return res.json({ success: false, message: "Username already exists" });
 
-    const user = await User.create({ name, username, email, password });
-    res.json({ success: true, message: "User registered successfully", user });
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, message: "Server error" });
-  }
+  const user = await User.create({ name, username, email, password });
+  res.json({ success: true, message: "User registered successfully", user });
 });
 
 // --- LOGIN ---
 app.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    if (!username || !password) return res.json({ success: false, message: "Username and password required" });
+  const { username, password } = req.body;
+  if (!username || !password) return res.json({ success: false, message: "Username and password required" });
 
-    const user = await User.findOne({ username });
-    if (!user) return res.json({ success: false, message: "User not found" });
+  const user = await User.findOne({ username });
+  if (!user) return res.json({ success: false, message: "User not found" });
+  if (user.password !== password) return res.json({ success: false, message: "Invalid password" });
 
-    if (user.password !== password) return res.json({ success: false, message: "Invalid password" });
-
-    const token = jwt.sign({ id: user._id, username }, JWT_SECRET, { expiresIn: "1d" });
-    res.json({ success: true, message: "Login successful", token });
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, message: "Server error" });
-  }
+  const token = jwt.sign({ id: user._id, username }, JWT_SECRET, { expiresIn: "1d" });
+  res.json({ success: true, message: "Login successful", token });
 });
 
 // --- DASHBOARD DATA ---
 app.get("/dashboard-data", auth, async (req, res) => {
   let data = await Dashboard.findOne({ userId: req.user.id });
-  if (!data) data = await Dashboard.findOne({ isDummy: true }); // global dummy
+  if (!data) data = await Dashboard.findOne({ isDummy: true });
   res.json(data);
 });
 
-// --- CHART STATS ---
+// --- STATS BY TYPE & DAYS ---
 app.get("/api/stats/:type/:days", auth, async (req, res) => {
   const { type, days } = req.params;
-  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-  let data;
+  const since = new Date(Date.now() - Number(days) * 24 * 60 * 60 * 1000);
+  let data = [];
 
-  if (type === "burnout") {
-    data = await BurnoutLog.find({ userId: req.user.id, timestamp: { $gte: since } });
-    if (!data.length) data = await BurnoutLog.find({ isDummy: true, timestamp: { $gte: since } });
-  }
+  switch (type) {
+    case "burnout":
+      data = await BurnoutLog.find({ userId: req.user.id, timestamp: { $gte: since } });
+      if (!data.length) data = await BurnoutLog.find({ isDummy: true, timestamp: { $gte: since } });
+      break;
 
-  if (type === "eyeStrain") {
-    data = await EyeStrainLog.find({ userId: req.user.id, timestamp: { $gte: since } });
-    if (!data.length) data = await EyeStrainLog.find({ isDummy: true, timestamp: { $gte: since } });
-  }
+    case "eyestrain":
+      data = await EyeStrainLog.find({ userId: req.user.id, timestamp: { $gte: since } });
+      if (!data.length) data = await EyeStrainLog.find({ isDummy: true, timestamp: { $gte: since } });
+      break;
 
-  if (type === "appUsage") {
-    data = await AppUsage.find({ userId: req.user.id, timestamp: { $gte: since } });
-    if (!data.length) data = await AppUsage.find({ isDummy: true, timestamp: { $gte: since } });
+    case "appUsage":
+      data = await AppUsage.find({ userId: req.user.id, timestamp: { $gte: since } });
+      if (!data.length) data = await AppUsage.find({ isDummy: true, timestamp: { $gte: since } });
+      break;
+
+    default:
+      return res.status(400).json({ success: false, message: "Invalid type" });
   }
 
   res.json(data);
 });
 
 // --- ACTIVITY LOGS ---
-app.get("/api/activity", auth, async (req, res) => {
-  let logs = await ActivityLog.find({ userId: req.user.id }).sort("-timestamp").limit(10);
-  if (!logs.length) logs = await ActivityLog.find({ isDummy: true }).sort("-timestamp").limit(10);
+app.get("/api/activity/:days?", auth, async (req, res) => {
+  const days = req.params.days ? Number(req.params.days) : 7;
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+  let logs = await ActivityLog.find({ userId: req.user.id, timestamp: { $gte: since } }).sort("-timestamp").limit(10);
+  if (!logs.length) logs = await ActivityLog.find({ isDummy: true, timestamp: { $gte: since } }).sort("-timestamp").limit(10);
+
   res.json(logs);
 });
 
@@ -110,4 +107,4 @@ app.get("/api/recommendations", auth, async (req, res) => {
   res.json(recs);
 });
 
-app.listen(8080, () => console.log("🚀 Server running on http://localhost:8080"));
+app.listen(8080, () => console.log("Server running on http://localhost:8080"));
