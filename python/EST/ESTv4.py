@@ -102,7 +102,14 @@ class AlertLogger:
         }
 
         if self.db_logger:
-            self.db_logger.log_alert(alert_type,final_severity,details)
+            if alert_type in ["Blink Frequency", "Fatigue Detected"]:
+                if severity in ["Medium", "High", "Critical"]:
+                    self.db_logger.log_eye_strain("Mild" if severity == "Medium" else "Severe")
+                    self.db_logger.update_dashboard("Mild" if severity == "Medium" else "Severe")
+                else:
+                    self.db_logger.log_eye_strain("None")
+                    self.db_logger.update_dashboard("None")
+
             
         
         
@@ -162,6 +169,8 @@ class EyeStrainMonitor:
         self.db_logger = DBLogger(user_id="demo-user")
         session_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         self.alert_logger = AlertLogger(session_timestamp, db_logger=self.db_logger)
+
+        self.silent_mode = False
 
         # detection and audio init
         self.detection_method = self._initialize_detection()
@@ -297,7 +306,7 @@ class EyeStrainMonitor:
 
     def play_alert_sound(self, alert_type="blink"):
         """Play an alert sound without blocking main loop."""
-        if self.alert_playing:
+        if self.alert_playing or self.silent_mode:
             return
         def _play():
             self.alert_playing = True
@@ -445,13 +454,18 @@ class EyeStrainMonitor:
                             cv2.FONT_HERSHEY_SIMPLEX, 0.8,
                             self.current_alert['color'], 2)
 
-    def run(self):
+    def run(self, headless = False , silent = False):
+        self.silent_mode=silent
         print("Starting Eye Strain Monitor...")
         print("Press 'q' to quit, 's' to save statistics.")
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             print("Error: Could not access webcam. Check permissions or device.")
             return
+        
+        if headless:
+            print("running in headless mode + silent mode (no window display and no sound)")
+
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         try:
@@ -548,19 +562,21 @@ class EyeStrainMonitor:
                         self.session_start_time = time.time()
 
                 # Overlay stats + alerts
-                self.draw_statistics(frame)
-                cv2.imshow("Eye Strain Monitor", frame)
+                if not headless:
+                    self.draw_statistics(frame)
+                    cv2.imshow("Eye Strain Monitor", frame)
 
-                # Handle keypress
-                key = cv2.waitKey(1) & 0xFF
-                if key == ord("q"):
-                    break
-                elif key == ord("s"):
-                    self.save_session_data()
+                    # Handle keypress
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord("q"):
+                        break
+                    elif key == ord("s"):
+                        self.save_session_data()
 
         finally:
             cap.release()
-            cv2.destroyAllWindows()
+            if not headless:
+                cv2.destroyAllWindows()
             self.save_session_data(final=True)
 
     def save_session_data(self, final=False):
@@ -584,5 +600,8 @@ class EyeStrainMonitor:
 
 
 if __name__ == "__main__":
+    import sys
+    headless = "--headless" in sys.argv
+    silent = "--silent" in sys.argv or headless
     monitor = EyeStrainMonitor()
-    monitor.run()
+    monitor.run(headless=headless , silent=silent)
