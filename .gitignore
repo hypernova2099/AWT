@@ -1,3 +1,5 @@
+node_modules/
+
 # Python virtual environment
 backend/venv/
 __pycache__/
