@@ -1,48 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <title>Digital Burnout Detector</title>
+    <meta charset="UTF-8">
+    <title>Digital Burnout Detector - AI Wellness Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="dashboard.js" defer></script>
 </head>
 <body>
     <div class="container">
-                <div class="box1">
-                <div class="half1">
-                <div class="logo"><img src="./loginform/logo.png" alt="Logo"></div>
+        <!-- Header with Controls -->
+        <div class="box1">
+            <div class="half1">
+                <div class="logo"><img src="./loginform/logo.png" alt="Digital Burnout Logo"></div>
                 <div class="logocontent">DigitalBurnout</div>
-            </div></div>
-           
-        
-                <div class="half2">
-                </div><h3>Current Status</h3>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <div class="status-label">Burnout Risk</div>
-                        <div id="burnoutScore" class="status-value">--</div>
-                        <div id="burnoutLevel" class="status-level">--</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Today's Work</div>
-                        <div id="workHours" class="status-value">--</div>
-                        <div class="status-unit">hours</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Active Session</div>
-                        <div id="sessionTime" class="status-value">--</div>
-                        <div class="status-unit">minutes</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Eye Strain</div>
-                        <div id="eyeStrainStatus" class="status-value">--</div>
-                        <div class="status-level">--</div>
-                    </div>
+            </div>
+            <div class="control-panel">
+                <button id="webcamToggle" class="webcam-btn">
+                    <span class="webcam-icon">📷</span>
+                    <span class="webcam-text">Start Real-Time Monitoring</span>
+                </button>
+                <div class="status-indicator-global">
+                    <span class="status-dot-global"></span>
+                    <span id="globalStatus">Monitoring Ready</span>
                 </div>
             </div>
         </div>
 
-        <div>
+        <!-- Current Status -->
+        <h3 style="grid-column: 1 / -1;">Current Wellness Status</h3>
+        <div class="status-grid">
+            <div class="status-item">
+                <div class="status-label">Burnout Risk</div>
+                <div id="burnoutScore" class="status-value">--</div>
+                <div id="burnoutLevel" class="status-level">--</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Today's Work</div>
+                <div id="workHours" class="status-value">--</div>
+                <div class="status-unit">hours</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Active Session</div>
+                <div id="sessionTime" class="status-value">--</div>
+                <div class="status-unit">minutes</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Eye Strain</div>
+                <div id="eyeStrainStatus" class="status-value">--</div>
+                <div class="status-details">
+                    <div>Average Level: <span id="eyeStrainAverage">--</span></div>
+                    <div>Total Alerts: <span id="eyeStrainTotal">--</span></div>
+                    <div>Last Alert: <span id="eyeStrainLast">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Burnout Trend Chart -->
+        <div id="burnoutChart-container" class="card">
+            <div class="card-header">
+                <h3>Burnout Trend Analysis</h3>
+                <select id="burnoutPeriod" class="period-selector">
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <canvas id="burnoutChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Application Usage Chart -->
+        <div id="appUsage-container" class="card">
             <div class="card-header">
                 <h3>Application Usage</h3>
                 <select id="appUsagePeriod" class="period-selector">
@@ -55,7 +84,22 @@
             </div>
         </div>
 
-        <div>
+        <!-- Eye Strain Alerts Chart -->
+        <div id="eyeStrain-container" class="card">
+            <div class="card-header">
+                <h3>Eye Strain Monitoring</h3>
+                <select id="eyeStrainPeriod" class="period-selector">
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <canvas id="eyeStrainChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Activity Distribution Chart -->
+        <div id="activity-container" class="card">
             <div class="card-header">
                 <h3>Activity Distribution</h3>
                 <select id="activityPeriod" class="period-selector">
@@ -68,115 +112,111 @@
             </div>
         </div>
 
-        <div>
+        <!-- Activity Logs -->
+        <div id="activityLogs-container" class="card">
             <div class="card-header">
-                <h3>Burnout Trend</h3>
-                <select id="burnoutPeriod" class="period-selector">
-                    <option value="7">Last 7 days</option>
-                    <option value="30">Last 30 days</option>
-                </select>
+                <h3>Recent Activity Logs</h3>
             </div>
             <div class="card-content">
-                <canvas id="burnoutChart"></canvas>
+                <ul id="activityLogs">
+                    <div class="loading">Loading activity data...</div>
+                </ul>
             </div>
         </div>
 
-        <div>
+        <!-- Wellness Recommendations -->
+        <div id="recommendations-container" class="card">
             <div class="card-header">
-                <h3>Eye Strain Alerts</h3>
-                <select id="eyeStrainPeriod" class="period-selector">
-                    <option value="7">Last 7 days</option>
-                    <option value="30">Last 30 days</option>
-                </select>
-            </div>
-            <div class="card-content">
-                <canvas id="eyeStrainChart"></canvas>
-            </div>
-        </div>
-
-    
-        <div>
-            <div class="card-header">
-                <h3>Wellness Recommendations</h3>
-                <button id="refreshRecommendations" class="refresh-btn">🔄</button>
+                <h3>AI Wellness Recommendations</h3>
+                <button id="refreshRecommendations" class="refresh-btn" title="Refresh Recommendations">🔄</button>
             </div>
             <div class="card-content">
                 <div id="recommendationsList" class="recommendations-list">
-                    <div class="loading">Loading recommendations...</div>
+                    <div class="loading">Analyzing your wellness data...</div>
                 </div>
             </div>
         </div>
 
-
+        <!-- Footer -->
         <footer class="footer">
             <div class="footer-content">
-                <span class="app-version">v1.0.0</span>
+                <span class="app-version">DigitalBurnout v2.0 • AI-Powered Wellness</span>
                 <span class="status-indicator">
                     <span class="status-dot"></span>
-                    <span id="connectionStatus">Connected</span>
+                    <span id="connectionStatus">Connected to Real-Time Analytics</span>
                 </span>
             </div>
         </footer>
     </div>
 
-  
+    <!-- Webcam Monitoring Modal -->
+    <div id="webcamModal" class="webcam-modal">
+        <div class="webcam-container">
+            <div class="webcam-header">
+                <h3>🔍 Real-Time Wellness Monitoring</h3>
+                <button class="close-btn" id="closeWebcam">✕</button>
+            </div>
+            <div class="webcam-content">
+                <div class="webcam-feed">
+                    <video id="webcamVideo" autoplay playsinline></video>
+                </div>
+                <div class="webcam-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveBlinkRate">--</div>
+                        <div class="stat-label">Blink Rate (per minute)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveEyeStrain">--</div>
+                        <div class="stat-label">Eye Strain Level</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveFocusTime">--</div>
+                        <div class="stat-label">Focus Time (minutes)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveAlerts">--</div>
+                        <div class="stat-label">Wellness Alerts</div>
+                    </div>
+                </div>
+                <div class="webcam-controls">
+                    <button id="stopMonitoring" class="close-webcam">Stop Real-Time Monitoring</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
-        <div>
+        <div class="modal-container">
             <div class="modal-header">
-                <h3>Settings</h3>
+                <h3>Wellness Settings</h3>
                 <button class="close-btn" id="closeSettings">✕</button>
             </div>
             <div class="modal-body">
                 <div class="setting-group">
                     <label>
                         <input type="checkbox" id="enableNotifications" checked>
-                        Enable Notifications
+                        Enable Wellness Notifications
                     </label>
                 </div>
                 <div class="setting-group">
                     <label>
-                        <input type="checkbox" id="enableWebcam" disabled>
-                        Enable Webcam for Eye Strain Detection
+                        <input type="checkbox" id="enableRealTime" checked>
+                        Enable Real-Time Analytics
                     </label>
-                    <small>Coming soon</small>
                 </div>
                 <div class="setting-group">
-                    <label>Break Reminder Interval (minutes)</label>
-                    <input type="number" id="breakInterval" value="60" min="15" max="120">
+                    <label>Break Reminder Interval</label>
+                    <input type="range" id="breakInterval" min="15" max="120" value="60" step="5">
+                    <small><span id="breakValue">60</span> minutes between breaks</small>
+                </div>
+                <div class="setting-group">
+                    <label>Eye Strain Sensitivity</label>
+                    <input type="range" id="strainSensitivity" min="1" max="10" value="5" step="1">
+                    <small>Adjust eye strain detection sensitivity</small>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
-<script>
-    const token = localStorage.getItem('token');
-    if (!token){
-        window.location.href = 'loginForm.html'
-    }
-    else{
-        
-
-    fetch('http://localhost:8080/dashboard-data',{
-        headers:{
-            'Authorization':token
-        }
-    })
-    .then(res=>res.json())
-    .then(data=>{
-        console.log("Dashboard Data:",data);
-        document.getElementById("burnoutScore").innerText = data.burnoutScore || "--";
-        document.getElementById("burnoutLevel").innerText = data.burnoutLevel || "--";
-        document.getElementById("workHours").innerText = data.workHours || "--";
-        document.getElementById("sessionTime").innerText = data.sessionTime || "--";
-        document.getElementById("eyeStrainStatus").innerText = data.eyeStrain || "--";
-    })
-    .catch(err => {
-        console.error("error fetching dashboard data:", err);
-        window.location.href="loginform/loginForm.html"
-    });
-    }
-
-    
-</script>
 </html>

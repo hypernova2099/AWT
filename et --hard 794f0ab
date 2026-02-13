@@ -1,0 +1,18 @@
+[33mcfdc0b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge pull request #1 from adityarp0/adityarp0
+[33m81c4f8b[m[33m ([m[1;31morigin/adityarp0[m[33m)[m Add server, dashboard, seed, and frontend files for dummy data setup
+[33m24a7936[m Add backend server.js with MongoDB connection
+[33m794f0ab[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/chrisel[m[33m, [m[1;31morigin/HEAD[m[33m)[m debug jwt auth
+[33m73ef52f[m add python module and auth for login (not debugged)
+[33m579f96f[m add dashboard frontend
+[33mc285f57[m[33m ([m[1;31morigin/adhiva[m[33m)[m add register POST route
+[33m226852b[m Adityarp0 (#1) add register form
+[33m67bb7e7[m Refactor login functionality to use fetch API
+[33ma9ce598[m switched fetch to axios
+[33m30f2edf[m :wq
+[33m470973c[m login-backend
+[33m95e0f5f[m Update register.css
+[33m3c2fcf8[m Update login.css
+[33m4622ee4[m Update main.js
+[33m18c696c[m login page created
+[33m8dc680a[m initial folder structure
+[33mc51d6f4[m Add LoginForm.html
